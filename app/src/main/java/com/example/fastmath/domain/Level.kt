@@ -1,0 +1,4 @@
+package com.example.fastmath.domain
+
+class Level {
+}
