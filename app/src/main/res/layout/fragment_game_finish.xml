@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.GameFinishFragment">
+
+    <ImageView
+        android:id="@+id/emoji_result"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="48dp"
+        android:contentDescription="@string/game_over"
+        app:layout_constraintBottom_toTopOf="@id/textViewRequiredScore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@mipmap/smile_face"
+        />
+
+    <TextView
+        android:id="@+id/textViewRequiredScore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/required_score_s"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/textViewUserScore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        />
+
+    <TextView
+        android:id="@+id/textViewUserScore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/your_score_s"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/textViewRequiredPercentage"
+        app:layout_constraintEnd_toEndOf="@id/textViewRequiredScore"
+        app:layout_constraintStart_toStartOf="@id/textViewRequiredScore"
+        app:layout_constraintTop_toBottomOf="@id/textViewRequiredScore"
+        />
+
+    <TextView
+        android:id="@+id/textViewRequiredPercentage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/required_correct_percentage_s"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/textViewUserPercentage"
+        app:layout_constraintEnd_toEndOf="@id/textViewRequiredScore"
+        app:layout_constraintStart_toStartOf="@id/textViewRequiredScore"
+        app:layout_constraintTop_toBottomOf="@id/textViewUserScore"
+        app:layout_constraintVertical_chainStyle="packed"
+        />
+
+    <TextView
+        android:id="@+id/textViewUserPercentage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/your_percentage_s"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/buttonRetry"
+        app:layout_constraintEnd_toEndOf="@id/textViewRequiredScore"
+        app:layout_constraintStart_toStartOf="@id/textViewRequiredScore"
+        app:layout_constraintTop_toBottomOf="@id/textViewRequiredPercentage"
+        />
+
+    <Button
+        android:id="@+id/buttonRetry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/play_again"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        app:cornerRadius="10dp"
+        android:padding="20dp"
+        android:layout_margin="20dp"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
