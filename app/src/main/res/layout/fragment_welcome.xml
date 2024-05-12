@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/brain_logo" />
+        app:srcCompat="@drawable/welcome_brain" />
 
     <TextView
         android:id="@+id/textViewGameDescription"

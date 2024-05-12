@@ -5,7 +5,6 @@ import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.fastmath.R
 import com.example.fastmath.data.GameRepositoryImpl
 import com.example.fastmath.domain.entity.GameResult
@@ -14,7 +13,6 @@ import com.example.fastmath.domain.entity.Level
 import com.example.fastmath.domain.entity.Question
 import com.example.fastmath.domain.usecases.GenerateQuestionUseCase
 import com.example.fastmath.domain.usecases.GetGameSettingsUseCase
-import java.util.Timer
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -30,13 +28,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private var timer: CountDownTimer? = null
 
-//    private val _finished = MutableLiveData<Unit>()
-//    val finished: LiveData<Unit>
-//        get() = _finished
-
-    private val _formattedSeconds = MutableLiveData<String>()
-    val formattedSeconds: LiveData<String>
-        get() = _formattedSeconds
+    private val _formattedTime = MutableLiveData<String>()
+    val formattedTime: LiveData<String>
+        get() = _formattedTime
 
     private val _question = MutableLiveData<Question>()
     val question: LiveData<Question>
@@ -78,6 +72,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         getGameSettings(level)
         startTimer()
         generateQuestion()
+        updateProgress()
     }
 
     private fun updateProgress() {
@@ -93,6 +88,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun calculatePercentOfRightAnswers(): Int {
+        if (countOfQuestions == 0) {
+            return 0
+        }
         return ((countOfCorrectAnswers / countOfQuestions.toDouble()) * 100).toInt()
     }
 
@@ -120,7 +118,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 MILLIS_IN_SECONDS
             ) {
             override fun onTick(millis: Long) {
-                _formattedSeconds.value = formatTime(millis)
+                _formattedTime.value = formatTime(millis)
             }
 
             override fun onFinish() {
