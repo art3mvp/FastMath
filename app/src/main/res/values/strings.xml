@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Fast Math</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_logo">app logo</string>
+    <string name="game_description">Fast Math is an engaging math game designed to sharpen your calculation skills and speed. In this game, players are presented with a total sum and a single visible number\n\nThe objective is to select the correct number from six options that, when added to the visible number \n\nWith each round timed, players must act swiftly to make the right choice\n\nAs players progress, the game tracks their correct answers, displaying a running count and an accuracy percentage to motivate improvement.</string>
+    <string name="i_understand">I understand</string>
+    <string name="select_level">Select level:</string>
+    <string name="test">TEST</string>
+    <string name="easy">EASY</string>
+    <string name="medium">MEDIUM</string>
+    <string name="hard">HARD</string>
+    <string name="progress_answers">Correct answers: %s (minimum %s)</string>
+    <string name="game_over">game over</string>
+    <string name="required_score_s">Required score: %s</string>
+    <string name="your_score_s">Your score: %s</string>
+    <string name="required_correct_percentage_s">Requiered correct percentage: %s</string>
+    <string name="your_percentage_s">Your percentage: %s</string>
+    <string name="play_again">Play again!</string>
 </resources>
