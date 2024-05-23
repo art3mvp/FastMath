@@ -12,9 +12,9 @@
     <string name="hard">HARD</string>
     <string name="progress_answers">Correct answers: %s (minimum %s)</string>
     <string name="game_over">game over</string>
-    <string name="required_score_s">Required score: %s</string>
-    <string name="your_score_s">Your score: %s</string>
-    <string name="required_correct_percentage_s">Requiered correct percentage: %s</string>
-    <string name="your_percentage_s">Your percentage: %s</string>
+    <string name="required_score">Required score: %d</string>
+    <string name="your_score">Your score: %d</string>
+    <string name="required_correct_percentage">Required correct percentage: %d</string>
+    <string name="user_percentage">Your percentage: %d</string>
     <string name="play_again">Play again!</string>
 </resources>

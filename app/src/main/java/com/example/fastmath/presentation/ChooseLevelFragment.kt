@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
 import com.example.fastmath.R
 import com.example.fastmath.databinding.FragmentChooseLevelBinding
 import com.example.fastmath.databinding.FragmentGameBinding
@@ -34,7 +35,7 @@ class ChooseLevelFragment : Fragment() {
     }
 
     private fun onLevelClickListeners() {
-        with (binding) {
+        with(binding) {
             buttonHard.setOnClickListener {
                 launchGameFragment(Level.HARD)
             }
@@ -51,24 +52,15 @@ class ChooseLevelFragment : Fragment() {
     }
 
     private fun launchGameFragment(level: Level) {
-       requireActivity().supportFragmentManager.beginTransaction()
-           .replace(R.id.main_container, GameFragment.newInstance(level))
-           .addToBackStack(GameFragment.NAME)
-           .commit()
+        findNavController().navigate(
+            ChooseLevelFragmentDirections.actionChooseLevelFragmentToGameFragment(
+                level
+            )
+        )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-
-        const val NAME = "ChooseLevelFragment"
-
-        @JvmStatic
-        fun newInstance(): ChooseLevelFragment {
-            return ChooseLevelFragment()
-        }
     }
 }

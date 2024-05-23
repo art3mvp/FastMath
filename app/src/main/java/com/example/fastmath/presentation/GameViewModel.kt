@@ -2,9 +2,10 @@ package com.example.fastmath.presentation
 
 import android.app.Application
 import android.os.CountDownTimer
-import androidx.lifecycle.AndroidViewModel
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.fastmath.R
 import com.example.fastmath.data.GameRepositoryImpl
 import com.example.fastmath.domain.entity.GameResult
@@ -14,123 +15,128 @@ import com.example.fastmath.domain.entity.Question
 import com.example.fastmath.domain.usecases.GenerateQuestionUseCase
 import com.example.fastmath.domain.usecases.GetGameSettingsUseCase
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel(
+    private val application: Application,
+    private val level: Level,
+) : ViewModel() {
 
-
-    private val context = application
-    private lateinit var gameSettings: GameSettings
-    private lateinit var level: Level
 
     private val repository = GameRepositoryImpl
 
     private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
     private val getGameSettingsUseCase = GetGameSettingsUseCase(repository)
 
-    private var timer: CountDownTimer? = null
+    private lateinit var gameSettings: GameSettings
+
+    private val _getQuestion = MutableLiveData<Question>()
+    val getQuestion: LiveData<Question>
+        get() = _getQuestion
+
+    private val _enoughScore = MutableLiveData<Boolean>()
+    val enoughScore: LiveData<Boolean>
+        get() = _enoughScore
+
+    private val _enoughPercentage = MutableLiveData<Boolean>()
+    val enoughPercentage: LiveData<Boolean>
+        get() = _enoughPercentage
+
+    private val _userPercentage = MutableLiveData<Int>()
+    val userPercentage: LiveData<Int>
+        get() = _userPercentage
+
+
+    private val _currentProgress = MutableLiveData<String>()
+    val currentProgress: LiveData<String>
+        get() = _currentProgress
+
+    private val _gameResult = MutableLiveData<GameResult>()
+    val gameResult: LiveData<GameResult>
+        get() = _gameResult
 
     private val _formattedTime = MutableLiveData<String>()
     val formattedTime: LiveData<String>
         get() = _formattedTime
 
-    private val _question = MutableLiveData<Question>()
-    val question: LiveData<Question>
-        get() = _question
+    private var timer: CountDownTimer? = null
+
+    private val _minPercent = MutableLiveData<Int>()
+    val minPercent: LiveData<Int>
+        get() = _minPercent
+
+
+
+    init {
+        startGame()
+        startTimer()
+    }
 
     private var countOfCorrectAnswers = 0
     private var countOfQuestions = 0
 
-    private val _percentOfCorrectAnswers = MutableLiveData<Int>()
-    val percentOfCorrectAnswers:LiveData<Int>
-        get() = _percentOfCorrectAnswers
-
-    private val _progressOfCorrectAnswers = MutableLiveData<String>()
-    val progressOfCorrectAnswers:LiveData<String>
-        get() = _progressOfCorrectAnswers
-
-    private val _enoughPercent = MutableLiveData<Boolean>()
-    val enoughPercent:LiveData<Boolean>
-        get() = _enoughPercent
-
-    private val _enoughCorrectAnswers = MutableLiveData<Boolean>()
-    val enoughCorrectAnswers:LiveData<Boolean>
-        get() = _enoughCorrectAnswers
-
-    private val _minPercent = MutableLiveData<Int>()
-    val minPercent:LiveData<Int>
-        get() = _minPercent
-
-    private val _gameResult = MutableLiveData<GameResult>()
-    val gameResult:LiveData<GameResult>
-        get() = _gameResult
-
-
-    private fun generateQuestion() {
-        _question.value = generateQuestionUseCase.invoke(gameSettings.maxSumValue)
-    }
-
-    fun startGame(level: Level) {
-        getGameSettings(level)
-        startTimer()
+    private fun startGame() {
+        getGameSettings()
         generateQuestion()
         updateProgress()
     }
 
-    private fun updateProgress() {
-        val percent = calculatePercentOfRightAnswers()
-        _percentOfCorrectAnswers.value = percent
-        _progressOfCorrectAnswers.value = String.format(
-            context.resources.getString(R.string.progress_answers),
-            countOfCorrectAnswers.toString(),
-            gameSettings.minCountOfRightAnswers.toString()
-        )
-        _enoughCorrectAnswers.value = countOfCorrectAnswers >= gameSettings.minCountOfRightAnswers
-        _enoughPercent.value = percent >= gameSettings.minPercentOfRightAnswers
-    }
-
-    private fun calculatePercentOfRightAnswers(): Int {
-        if (countOfQuestions == 0) {
-            return 0
-        }
-        return ((countOfCorrectAnswers / countOfQuestions.toDouble()) * 100).toInt()
-    }
-
-    fun chooseAnswer(number: Int) {
-        val rightAnswer = question.value?.rightAnswer
-        if (number == rightAnswer) {
-            countOfCorrectAnswers++
-        }
-        countOfQuestions++
-
-        updateProgress()
-        generateQuestion()
-    }
-
-    private fun getGameSettings(level: Level) {
-        this.level = level
-        this.gameSettings = getGameSettingsUseCase.invoke(level)
+    private fun getGameSettings() {
+        gameSettings = getGameSettingsUseCase.invoke(level)
         _minPercent.value = gameSettings.minPercentOfRightAnswers
     }
 
+    private fun generateQuestion() {
+        _getQuestion.value = generateQuestionUseCase(gameSettings.maxSumValue)
+    }
+
+    fun checkAnswer(answer: Int) {
+        if (answer == _getQuestion.value?.rightAnswer) {
+            countOfCorrectAnswers++
+        }
+        countOfQuestions++
+        updateProgress()
+        generateQuestion()
+    }
+
+    private fun updateProgress() {
+        val percent = getPercentage()
+        _userPercentage.value = percent
+        _currentProgress.value = getCurrentProgress()
+        _enoughScore.value = countOfCorrectAnswers >= gameSettings.minCountOfRightAnswers
+        _enoughPercentage.value = percent >= gameSettings.minPercentOfRightAnswers
+    }
+
+    private fun getPercentage(): Int {
+        return (countOfCorrectAnswers / countOfQuestions.toDouble() * 100).toInt()
+    }
+
+    private fun getCurrentProgress(): String {
+        val template = ContextCompat.getString(application, R.string.progress_answers)
+        return String.format(template, countOfCorrectAnswers, gameSettings.minCountOfRightAnswers)
+    }
+
     private fun startTimer() {
-         timer = object :
-            CountDownTimer(
-                gameSettings.gameTimeInSeconds * MILLIS_IN_SECONDS,
-                MILLIS_IN_SECONDS
-            ) {
+        timer = object : CountDownTimer(secondsToMillis(), SECONDS_IN_MILLIS) {
             override fun onTick(millis: Long) {
-                _formattedTime.value = formatTime(millis)
+                _formattedTime.value = getFormattedTime(millis)
             }
 
             override fun onFinish() {
-               finishGame()
+                gameFinish()
             }
         }
         timer?.start()
     }
 
-    private fun finishGame() {
+    private fun getFormattedTime(millis: Long): String {
+        val seconds = millis / SECONDS_IN_MILLIS
+        val minutes = seconds / SECONDS_IN_MINUTE
+        val restSeconds = seconds % SECONDS_IN_MINUTE
+        return String.format(TEMPLATE_TIME, minutes, restSeconds)
+    }
+
+    private fun gameFinish() {
         _gameResult.value = GameResult(
-            enoughPercent.value == true && enoughCorrectAnswers.value == true,
+            enoughPercentage.value == true && enoughScore.value == true,
             countOfCorrectAnswers,
             countOfQuestions,
             gameSettings
@@ -142,18 +148,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         timer?.cancel()
     }
 
-    private fun formatTime(millis: Long): String {
-        val seconds = millis / MILLIS_IN_SECONDS
-        val minutes = seconds / SECONDS_IN_MINUTE
-        val remainingSeconds = seconds % SECONDS_IN_MINUTE
-        return String.format(TIME_TEMPLATE, minutes, remainingSeconds)
+    private fun secondsToMillis(): Long {
+        return gameSettings.gameTimeInSeconds * SECONDS_IN_MILLIS
     }
 
     companion object {
-        private const val MILLIS_IN_SECONDS = 1000L
-        private const val TIME_TEMPLATE = "%02d:%02d"
+        private const val SECONDS_IN_MILLIS = 1000L
+        private const val TEMPLATE_TIME = "%02d:%02d"
         private const val SECONDS_IN_MINUTE = 60
     }
-
-
 }
